@@ -24,8 +24,11 @@ processData = function(data){
 	dlt_theta = 2 * dlt_sin05theta / sqrt(1 - sin05theta^2)
 	r2 = sqrt(a^2 + data[,1]^2)
 	dlt_r2 = data[,1] * dlt_L * (a^2 + data[,1]^2)^(-0.5)
+	r2sin = 1/(r2^2 * sin05theta^4) / 10000
+	dlt_r2sin = sqrt((2 * dlt_r2 * r2sin/r2)^2 +
+		(4 * dlt_sin05theta * r2sin/sin05theta)^2)
 	data_means = data.frame(Nmin, dlt_Nmin, sin05theta, dlt_sin05theta, theta,
-		dlt_theta, r2, dlt_r2)
+		dlt_theta, r2, dlt_r2, r2sin, dlt_r2sin)
 }
 
 au[,1] = convertToM(au)
