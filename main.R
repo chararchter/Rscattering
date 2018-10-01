@@ -31,9 +31,31 @@ processData = function(data){
 		dlt_theta, r2, dlt_r2, r2sin, dlt_r2sin)
 }
 
+plotData = function(data_means, material){
+	linfit = lm(data_means[, 'Nmin'] ~ data_means[, 'r2sin'])
+	smry = summary(linfit) 
+	coef2=smry$coefficients[2][1]
+	coef1=smry$coefficients[1][1]
+	cat('y=',(as.numeric(coef1)),'+',(as.numeric(coef2)),'x','\n')
+	equation = sprintf("y = %.4f + %.4f x", coef1, coef2)
+
+	plot.new()
+	jpeg(paste('rplot', toString(material), '.jpeg', sep=""), width = 900, height = 500, units = "px", pointsize = 10)
+	plot(data_means[, 'r2sin'],data_means[, 'Nmin'], pch=20, col = "black",
+		xlab = expression(paste("1/(r2*sin^4(", theta, "/2))")),
+		ylab = "N/min",
+		# ylab=expression(paste("N(", theta, ")/min)")),
+		cex.axis = 1.5, cex.lab=1.5)
+	title(paste('Rutherford scattering for ', toString(material), sep=""),
+	    cex.main = 2,   font.main= 4, col.main= "black")
+	abline(linfit, col = "purple", lwd=3)
+	legend("bottomright", legend = c("data", equation),
+			col=c("black", "purple"), lwd = 4, lty = 1, xjust = 1, yjust = 1)
+	dev.off()
+}
+
 au[,1] = convertToM(au)
 al[,1] = convertToM(al)
-
 au_means = processData(au)
 al_means = processData(al)
 
@@ -43,3 +65,6 @@ print(au_means)
 print('Aluminium')
 print(al)
 print(al_means)
+
+plotData(au_means, "Au")
+plotData(al_means, "Al")
